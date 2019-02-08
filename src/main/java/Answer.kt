@@ -1,0 +1,1 @@
+data class Answer(val message:String, val value:Int, val yes:Boolean)
