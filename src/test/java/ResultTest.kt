@@ -4,7 +4,8 @@ import org.junit.Test
 class ResultTest {
 
     val happyIngredients = Success<Ingredients, ErrorCode>(listOf(Apple(), Cherry(), Banana()))
-    val successHappyFruitPie = Success<Food, ErrorCode>(FruitPie(colour= Apple().colour, weight = 71))
+    val happyFruitPie = FruitPie(colour= Apple().colour, weight = 71)
+    val successHappyFruitPie = SuccessFood(happyFruitPie)
     val evilIngredients = Success<Ingredients, ErrorCode>(listOf(Durian(), Cherry()))
     val baarf = Fail<Food, ErrorCode>(ErrorCode.STINKY_MESS)
     val boom = Fail<Ingredients, ErrorCode>(ErrorCode.EXPLOSION)
@@ -83,10 +84,36 @@ class ResultTest {
         assertThat(ping).isEqualTo(Cherry())
 
         val pingPing = makeDish(happyIngredients).orElse(Cherry())
-        assertThat(pingPing).isEqualTo(successHappyFruitPie)
+        assertThat(pingPing).isEqualTo(happyFruitPie)
 
         assertThat(bigBang is Fail)
         assertThat(baarf is Fail)
+    }
+
+    @Test
+    fun `Pie fight`() {
+        val pie1 = makePie(SuccessFood(Apple()))
+        assertThat(pie1 is Success)
+        assertThat((pie1 as SuccessFood).value is ApplePie)
+
+        val oops = makePie(makeDish(evilIngredients))
+        assertThat(oops is FailFood)
+        assertThat(oops).isEqualTo(baarf)
+
+        val secretToSuccess:SuccessDish = Success(listOf(Cherry(), Banana()))
+        val yummy = makePie(makeDish(secretToSuccess))
+        assertThat(yummy is FailFood)
+        assertThat(yummy).isEqualTo(boom)
+
+        val mysterySuccessAttemp:SuccessDish = Success(listOf())
+        val whatCouldItBe = makePie(makeDish(mysterySuccessAttemp))
+        assertThat(whatCouldItBe is FailFood)
+        assertThat(whatCouldItBe).isEqualTo(dietFood)
+
+        val fruitList = listOf<SuccessFood>(Success(Apple()), Success(Banana()), Success(Cherry()), Success(Durian()))
+        val foodList = fruitList.map { makePie(it) }
+        assertThat(foodList.size == 4)
+
     }
 
 }
