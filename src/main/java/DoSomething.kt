@@ -1,4 +1,4 @@
-fun makeDish(ingredients: Result<List<Food>, ErrorCode>): Result<Food, ErrorCode> =
+fun makeDish(ingredients: ResultIngredients): ResultFood =
     ingredients.flatMap {
         when {
             it.contains(Durian()) -> Fail<Food, ErrorCode>(ErrorCode.STINKY_MESS)

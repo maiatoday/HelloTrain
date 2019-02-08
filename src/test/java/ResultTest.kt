@@ -3,12 +3,12 @@ import org.junit.Test
 
 class ResultTest {
 
-    val happyIngredients = Success<Ingredients, ErrorCode>(listOf(Apple(), Cherry(), Banana()))
+    val happyIngredients = SuccessIngredients(listOf(Apple(), Cherry(), Banana()))
     val happyFruitPie = FruitPie(colour= Apple().colour, weight = 71)
     val successHappyFruitPie = SuccessFood(happyFruitPie)
-    val evilIngredients = Success<Ingredients, ErrorCode>(listOf(Durian(), Cherry()))
-    val baarf = Fail<Food, ErrorCode>(ErrorCode.STINKY_MESS)
-    val boom = Fail<Ingredients, ErrorCode>(ErrorCode.EXPLOSION)
+    val evilIngredients = SuccessIngredients(listOf(Durian(), Cherry()))
+    val baarf = FailFood(ErrorCode.STINKY_MESS)
+    val boom = FailIngredients(ErrorCode.EXPLOSION)
     val dietFood = Fail<Food, ErrorCode>(ErrorCode.ZERO_CALORIES)
 
     @Test
@@ -50,14 +50,14 @@ class ResultTest {
     @Test
     fun `fun with food`() {
 
-        val successApple = Success<Food, ErrorCode>(Apple())
+        val successApple = SuccessFood(Apple())
         assertThat((successApple as Success).value.colour).isEqualTo("Green")
 
         val thing2 = successApple.map {Banana(weight = it.weight)}
         assertThat((thing2 as Success).value is Banana)
         assertThat((thing2 as Success).value.weight).isEqualTo((successApple as Success).value.weight)
 
-        val successAppleRepeatable = successApple.flatMap {Success<Ingredients, ErrorCode>(listOf(it, it, it))}
+        val successAppleRepeatable = successApple.flatMap {SuccessIngredients(listOf(it, it, it))}
         assertThat((successAppleRepeatable as Success).value.size).isEqualTo(3)
 
         val thingFood = makeDish(successAppleRepeatable)
@@ -100,12 +100,12 @@ class ResultTest {
         assertThat(oops is FailFood)
         assertThat(oops).isEqualTo(baarf)
 
-        val secretToSuccess:SuccessDish = Success(listOf(Cherry(), Banana()))
+        val secretToSuccess:SuccessIngredients = Success(listOf(Cherry(), Banana()))
         val yummy = makePie(makeDish(secretToSuccess))
         assertThat(yummy is FailFood)
         assertThat(yummy).isEqualTo(boom)
 
-        val mysterySuccessAttemp:SuccessDish = Success(listOf())
+        val mysterySuccessAttemp:SuccessIngredients = Success(listOf())
         val whatCouldItBe = makePie(makeDish(mysterySuccessAttemp))
         assertThat(whatCouldItBe is FailFood)
         assertThat(whatCouldItBe).isEqualTo(dietFood)
@@ -113,6 +113,8 @@ class ResultTest {
         val fruitList = listOf<SuccessFood>(Success(Apple()), Success(Banana()), Success(Cherry()), Success(Durian()))
         val foodList = fruitList.map { makePie(it) }
         assertThat(foodList.size == 4)
+        val leftoversList = foodList.map { makePie(it)}
+        assertThat(leftoversList.size == 4)
 
     }
 

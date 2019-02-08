@@ -28,6 +28,6 @@ typealias SuccessFood=Success<Food, ErrorCode>
 typealias FailFood=Fail<Food, ErrorCode>
 
 typealias Ingredients=List<Food>
-typealias SuccessDish=Success<Ingredients, ErrorCode>
-typealias FailDish=Fail<Ingredients, ErrorCode>
-typealias ResultDish=Result<Ingredients, ErrorCode>
+typealias SuccessIngredients=Success<Ingredients, ErrorCode>
+typealias FailIngredients=Fail<Ingredients, ErrorCode>
+typealias ResultIngredients=Result<Ingredients, ErrorCode>
